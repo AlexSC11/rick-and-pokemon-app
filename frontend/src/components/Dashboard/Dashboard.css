@@ -1,0 +1,14 @@
+.dashboard-container {
+    position: relative;
+    min-height: 100vh;
+    padding-top: 60px; 
+}
+
+.button-container {
+    display: flex;
+    padding: 10px 0;
+}
+
+.button-container button {
+    margin: 0 10px;
+}

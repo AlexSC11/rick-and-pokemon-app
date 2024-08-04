@@ -1,0 +1,9 @@
+.item-signup {
+    margin-top: 10px;
+}
+
+.error-message-signup {
+    margin: 0;
+    color: rgb(245, 24, 24);
+    font-size: 12px;
+}
