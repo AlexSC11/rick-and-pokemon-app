@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../../axiosConfig";
+import { useNotification } from "../../NotificationContext";
 
 const FavoriteCharacters = ({ setUserData }) => {
     const [rickCharacters, setRickCharacters] = useState(null);
     const [pokemonCharacters, setPokemonCharacters] = useState(null);
+
+    const { showNotification } = useNotification();
 
     useEffect(() => {
         getFavoriteCharacters();
@@ -15,7 +18,7 @@ const FavoriteCharacters = ({ setUserData }) => {
             setRickCharacters(response.data.rickData);
             setPokemonCharacters(response.data.pokemonData);
         } catch (error) {
-            
+            showNotification(error.response.data.error);
         }
     };
 
@@ -23,8 +26,9 @@ const FavoriteCharacters = ({ setUserData }) => {
         try {
             await axiosInstance.put('/removecharacter',{ characterId: id, type});
             await getFavoriteCharacters();
+            showNotification('Character removed', 'green');
         } catch (error) {
-            
+            showNotification(error.response.data.error);
         }
     }
 
@@ -32,8 +36,9 @@ const FavoriteCharacters = ({ setUserData }) => {
         try {
             const response = await axiosInstance.put('/updatephoto',{ profilePhoto: imgSrc });
             setUserData(response.data.userData);
+            showNotification('Profile photo updated', 'green');
         } catch (error) {
-            
+            showNotification(error.response.data.error);
         }
     }
 
@@ -67,7 +72,7 @@ const FavoriteCharacters = ({ setUserData }) => {
 
     return (
         <>
-            <h1>FavoriteCharacters</h1>
+            <h1>Favorite Characters</h1>
             <hr/>
             <h2>Rick and Morty</h2>
             { rickCharacters && characterTable(rickCharacters, 'rick') }

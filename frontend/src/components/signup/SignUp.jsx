@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axiosInstance from "../../../axiosConfig";
 import './Signup.css';
+import { useNotification } from "../../NotificationContext";
 
 const SignUp = ({ setIsSignUp, setIsLogin, setUserData }) => {
     const [name, setName] = useState("");
@@ -12,6 +13,8 @@ const SignUp = ({ setIsSignUp, setIsLogin, setUserData }) => {
     const [emailError, setEmailError] = useState(null);
     const [passwordError, setPasswordError] = useState(null);
     const [confirmPasswordError, setConfirmPasswordError] = useState(null);
+
+    const { showNotification } = useNotification();
 
     const onSignUpClick = async() => {
         try {
@@ -55,7 +58,7 @@ const SignUp = ({ setIsSignUp, setIsLogin, setUserData }) => {
             setUserData(userData);
             setIsLogin(true);
         } catch (error) {
-            
+            showNotification(error.response.data.error);
         }
     }
 

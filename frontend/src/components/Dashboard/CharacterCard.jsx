@@ -1,12 +1,16 @@
 import axiosInstance from "../../../axiosConfig";
+import { useNotification } from "../../NotificationContext";
 
 const CharacterCard = ({imgSrc, name, id, type ,setUserData }) => {
+
+    const { showNotification } = useNotification();
 
     const addToFavorites = async() => {
         try {
             await axiosInstance.put('/addcharacter',{ characterId: id, type });
+            showNotification('Character added to favorites', 'green');
         } catch (error) {
-            console.log(error);
+            showNotification(error.response.data.error);
         }
     };
 
@@ -14,8 +18,9 @@ const CharacterCard = ({imgSrc, name, id, type ,setUserData }) => {
         try {
             const response = await axiosInstance.put('/updatephoto',{ profilePhoto: imgSrc });
             setUserData(response.data.userData);
+            showNotification('Profile photo updated', 'green');
         } catch (error) {
-            
+            showNotification(error.response.data.error);
         }
     }
 

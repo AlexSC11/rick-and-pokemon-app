@@ -4,6 +4,8 @@ import Login from './components/login/Login';
 import SignUp from './components/signup/SignUp';
 import Dashboard from './components/Dashboard/Dashboard';
 import axiosInstance from '../axiosConfig';
+import { NotificationProvider } from './NotificationContext';
+import Notification from './Notification';
 
 function App() {
   const [isLoadig, setIsLoading] = useState(true);
@@ -36,7 +38,8 @@ function App() {
   }
 
   return (
-    <>
+    <NotificationProvider>
+      <Notification/>
       {
         isLoadig ? <p>...loading</p> : 
         (
@@ -44,7 +47,7 @@ function App() {
           : isSignUp ? <SignUp setIsSignUp={ setIsSignUp } setIsLogin={ setIsLogin } setUserData={ setUserData }/> : <Login setIsSignUp={ setIsSignUp } setIsLogin={ setIsLogin } setUserData= { setUserData}/>
         )  
       }
-    </>
+    </NotificationProvider>
   )
 }
 

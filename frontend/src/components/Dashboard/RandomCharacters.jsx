@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import CharacterCard from "./CharacterCard";
 import axiosInstance from "../../../axiosConfig";
+import { useNotification } from "../../NotificationContext";
 
 const RandomCharacters = ({ setUserData }) => {
     const [rickCharacter, setRickCharacter] = useState(null);
@@ -10,19 +11,21 @@ const RandomCharacters = ({ setUserData }) => {
         getRandomCharacters();
     },[]);
 
+    const { showNotification } = useNotification();
+
     const getRandomCharacters = async() => {
         try {
             const response = await axiosInstance.get('/characters');
             setPokemonCharacter(response.data.pokemonCharacter);
             setRickCharacter(response.data.rickandmortyCharacter);
         } catch (error) {
-            
+            showNotification(error.response.data.error);
         }
     };
 
     return (
         <>
-            <h1>RandomCharacters</h1>
+            <h1>Random Characters</h1>
             <hr/>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 { rickCharacter && <CharacterCard 

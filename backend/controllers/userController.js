@@ -32,7 +32,7 @@ const updateUser = async(req, res) => {
     try {
         const { name, password } = req.body;
         const { email } = req.user;
-        const { rowCount } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        const { rowCount, rows } = await pool.query('SELECT profilephoto FROM users WHERE email = $1', [email]);
         if(rowCount === 0){
             return res.status(404).json({ error: 'User not found'});
         }
@@ -47,7 +47,7 @@ const updateUser = async(req, res) => {
         const updateValues = [name, hashedPassword, email];
 
         await pool.query(updateQuery, updateValues);
-        const userData = { name, email }
+        const userData = { name, email, profilephoto: rows[0].profilephoto }
         res.status(200).json({ message: 'User updated successfully', userData});
     } catch (error) {
         console.log(error);

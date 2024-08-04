@@ -1,17 +1,21 @@
 import { useState } from "react";
 import axiosInstance from "../../../axiosConfig";
+import { useNotification } from "../../NotificationContext";
 
 const UserInfo = ({userData, setUserData, logout }) => {
     const [name, setName] = useState(userData.name);
     const [password, setPassword] = useState('');
+
+    const { showNotification } = useNotification();
 
     const onSaveChanges = async() => {
         try {
             const response = await axiosInstance.put('/user',{ name, password });
             const { userData } = response.data;
             setUserData(userData)
+            showNotification('User info updated', 'green');
         } catch (error) {
-            console.log(error);
+            showNotification(error.response.data.error);
         }
     }
 
@@ -31,7 +35,7 @@ const UserInfo = ({userData, setUserData, logout }) => {
 
     return (
         <div>
-            <h1>UserInfo</h1>
+            <h1>User Info</h1>
             <hr/>
             <div style={{ display: 'inline-grid', gap: '10px'}}>
                 {

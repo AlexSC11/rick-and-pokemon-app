@@ -19,7 +19,7 @@ const AllUsers = () => {
 
     return (
         <>
-            <h1>AllUsers</h1>
+            <h1>All Users</h1>
             <hr/>
             {
                 data && <table style={{ width: '100%'}}>
