@@ -87,8 +87,17 @@ describe('User Controller Tests', () => {
     });
   });
 
+  test('getUserByEmail - should return 404 not found', async () => {
+    pool.query.mockResolvedValueOnce({ rows: [] });
+    const token = jwt.sign({ email: mockUsers[0].email }, process.env.SECRET_KEY);
+    const response = await request(app)
+      .get('/user')
+      .set('Authorization', `Bearer ${token}`);
+    expect(response.status).toBe(404);
+  });
+
   test('updateUser - should update user data', async () => {
-    pool.query.mockResolvedValueOnce({ rowCount: 1 });
+    pool.query.mockResolvedValueOnce({ rowCount: 1, rows: mockUsers });
     pool.query.mockResolvedValueOnce({});
     const token = jwt.sign({ email: mockUsers[0].email }, process.env.SECRET_KEY);
     const response = await request(app)
@@ -100,7 +109,19 @@ describe('User Controller Tests', () => {
     expect(response.body.userData).toEqual({
       name: 'Jane Doe',
       email: mockUsers[0].email,
+      profilephoto: "john.jpg"
     });
+  });
+
+  test('updateUser - should return 404 not found', async () => {
+    pool.query.mockResolvedValueOnce({ rowCount: 0 });
+    const token = jwt.sign({ email: mockUsers[0].email }, process.env.SECRET_KEY);
+    const response = await request(app)
+      .put('/user')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Jane Doe', password: 'newpassword' });
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBe('User not found');
   });
 
   test('deleteUser - should delete user', async () => {
@@ -130,6 +151,17 @@ describe('User Controller Tests', () => {
     });
   });
 
+  test('updateProfilePhoto - should return 404 not found', async () => {
+    pool.query.mockResolvedValueOnce({ rows: [] });
+    const token = jwt.sign({ email: mockUsers[0].email }, process.env.SECRET_KEY);
+    const response = await request(app)
+      .put('/user/profilephoto')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ profilePhoto: 'newphoto.jpg' });
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBe('User not found');
+  });
+
   test('signup - should register user', async () => {
     pool.query.mockResolvedValueOnce({ rowCount: 0 });
     pool.query.mockResolvedValueOnce({});
@@ -140,6 +172,15 @@ describe('User Controller Tests', () => {
     expect(response.body.message).toBe('User registered successfully');
   });
 
+  test('signup - should return 400 email already exist', async () => {
+    pool.query.mockResolvedValueOnce({ rowCount: 1 });
+    const response = await request(app)
+      .post('/signup')
+      .send({ name: 'Jane Doe', email: 'jane@example.com', password: 'password123' });
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Email already exist');
+  });
+
   test('login - should login user', async () => {
     pool.query.mockResolvedValueOnce({ rows: [mockUsers[0]] });
     const response = await request(app)
@@ -147,6 +188,15 @@ describe('User Controller Tests', () => {
       .send({ email: 'john@example.com', password: 'password123' });
     expect(response.status).toBe(201);
     expect(response.body.message).toBe('User login successfully');
+  });
+
+  test('login - should return 401 invalid credentials', async () => {
+    pool.query.mockResolvedValueOnce({ rows: [] });
+    const response = await request(app)
+      .post('/login')
+      .send({ email: 'john@example.com', password: 'password123' });
+    expect(response.status).toBe(401);
+    expect(response.body.error).toBe('Invalid credentials');
   });
 
   test('logout - should logout user', async () => {
